@@ -17,34 +17,25 @@ clean_df = clean_df.dropna(how="all")
 
 # clean column names
 clean_df.columns = (
-    clean_df.columns.astype(str)
-    .str.strip()
-    .str.lower()
-    .str.replace(" ", "_")
+    clean_df.columns.astype(str).str.strip().str.lower().str.replace(" ", "_")
 )
 
+# replace nothing values with NaN
+clean_df = clean_df.replace(["(nothing)", "nothing"], pd.NA)
+
 # clean sales column
-if "sales" in clean_df.columns:
-    clean_df["sales"] = (
-        clean_df["sales"]
-        .astype(str)
-        .str.replace(" sales", "", regex=False)
-        .str.strip()
-    )
+clean_df["sales"] = (
+    clean_df["sales"].astype(str).str.replace(" sales", "", regex=False).str.strip()
+)
 
 # numeric conversion
 numeric_cols = ["sales", "revenue", "stock", "price"]
 
 for col in numeric_cols:
-    if col in clean_df.columns:
-        clean_df[col] = pd.to_numeric(clean_df[col], errors="coerce")
+    clean_df[col] = pd.to_numeric(clean_df[col], errors="coerce")
 
 # date conversion
-if "order_date" in clean_df.columns:
-    clean_df["order_date"] = pd.to_datetime(
-        clean_df["order_date"],
-        errors="coerce"
-    )
+clean_df["order_date"] = pd.to_datetime(clean_df["order_date"], errors="coerce")
 
 # remove duplicates
 clean_df = clean_df.drop_duplicates()
